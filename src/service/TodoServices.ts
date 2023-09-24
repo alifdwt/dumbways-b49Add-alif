@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import ITodos from "../interface/Todos";
 import Todos from "../mocks/Todos";
+import Todo from "../databases/models/todo";
 
 export default new (class TodoService {
   private todos: ITodos[];
@@ -9,19 +10,25 @@ export default new (class TodoService {
     this.todos = [...Todos];
   }
 
-  find(req: Request, res: Response): Response {
+  async find(req: Request, res: Response): Promise<Response> {
     try {
-      return res.status(200).json(this.todos);
+      const todos = await Todo.findAll();
+      return res.status(200).json(todos);
     } catch (error) {
       return res.status(500).json({ error: "Internal Server Error" });
     }
   }
 
-  findOne(req: Request, res: Response): Response {
+  async findOne(req: Request, res: Response): Promise<Response> {
     try {
       const id: number = parseInt(req.params.id);
-      const data = Todos.find((datum) => datum.id === id);
-      return res.status(200).json(data);
+      if (isNaN(id) || id <= 0)
+        return res.status(400).json({ Error: "Invalid id" });
+
+      const todo = await Todo.findByPk(id);
+      if (!todo) return res.status(404).json({ Error: "Id not Found" });
+
+      return res.status(200).json(todo);
     } catch (error) {
       return res
         .status(500)
@@ -29,11 +36,12 @@ export default new (class TodoService {
     }
   }
 
-  create(req: Request, res: Response): Response {
+  async create(req: Request, res: Response): Promise<Response> {
     try {
-      const data: ITodos = req.body;
-      Todos.push(data);
-      return res.status(200).json({ data: Todos });
+      const { title, isDone } = req.body;
+      const todo = await Todo.create({ title, isDone });
+
+      return res.status(200).json(todo);
     } catch (error) {
       return res
         .status(500)
@@ -41,20 +49,17 @@ export default new (class TodoService {
     }
   }
 
-  update(req: Request, res: Response): Response {
+  async update(req: Request, res: Response): Promise<Response> {
     try {
       const id: number = parseInt(req.params.id);
-      const updateTodo: ITodos = req.body;
-      const index: number = this.todos.findIndex((todo) => todo.id === id);
-      console.log(index);
+      const todoToUpdate = await Todo.findByPk(id);
+      if (!todoToUpdate)
+        return res.status(404).json({ Error: "Todo not found" });
 
-      if (index !== -1) {
-        this.todos[index] = { ...this.todos[index], ...updateTodo };
-        const data = this.todos[index];
-        return res.status(200).json(data);
-      }
+      const updateTodo = req.body;
+      const todo = await todoToUpdate.update(updateTodo);
 
-      return res.status(200);
+      return res.status(200).json(todo);
     } catch (error) {
       return res
         .status(500)
@@ -62,12 +67,15 @@ export default new (class TodoService {
     }
   }
 
-  delete(req: Request, res: Response): Response {
+  async delete(req: Request, res: Response): Promise<Response> {
     try {
       const id: number = parseInt(req.params.id);
-      const data: ITodos[] = Todos.filter((todo) => todo.id === id);
+      const todoToDelete = await Todo.findByPk(id);
+      if (!todoToDelete)
+        return res.status(404).json({ Error: "Todo not found" });
 
-      return res.status(200).json(data);
+      const todo = await todoToDelete.destroy();
+      return res.status(200).json(todo);
     } catch (error) {
       return res
         .status(500)
@@ -75,23 +83,3 @@ export default new (class TodoService {
     }
   }
 })();
-
-// app.delete("/todo/:id", (req: Request, res: Response): Response => {
-// const id: number = parseInt(req.params.id);
-// const data: ITodos[] = Todos.filter((todo) => todo.id === id);
-
-// return res.status(200).json(data);
-// });
-
-// app.post("/todo", (req: Request, res: Response): Response => {
-// const data: ITodos = req.body;
-// Todos.push(data);
-
-//   return res.status(200).json({ data: Todos });
-// });
-
-// app.get("/todo/:id", (req: Request, res: Response): Response => {
-//   const id: number = parseInt(req.params.id);
-//   const data = Todos.find((datum) => datum.id === id);
-//   return res.status(200).json(data);
-// });
