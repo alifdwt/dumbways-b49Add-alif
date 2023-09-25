@@ -1,0 +1,4 @@
+npx sequelze-cli model:generate --name provinces --attributes id:integer,name:string,alt_name:string,latitude:float,longitude:float
+npx sequelize-cli model:generate --name cities_regencies --attributes id:integer,province_id:integer,name:string,alt_name:string,latitude:float,longitude:float
+npx sequelize-cli model:generate --name districs --attributes id:integer,regency_id:integer,name:string,alt_name:string,latitude:float,longitude:float
+npx sequelize-cli model:generate --name villages --attributes id:integer,district_id:integer,name:string,latitude:float,longitude:float

@@ -1,15 +1,7 @@
 import { Request, Response } from "express";
-import ITodos from "../interface/Todos";
-import Todos from "../mocks/Todos";
 import Todo from "../databases/models/todo";
 
 export default new (class TodoService {
-  private todos: ITodos[];
-
-  constructor() {
-    this.todos = [...Todos];
-  }
-
   async find(req: Request, res: Response): Promise<Response> {
     try {
       const todos = await Todo.findAll();
