@@ -1,0 +1,1 @@
+mkdir -p src/{controllers,entities,middlewares,route,service,utils,libs}
