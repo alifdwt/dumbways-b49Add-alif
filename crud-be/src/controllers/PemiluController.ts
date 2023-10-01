@@ -11,4 +11,10 @@ export default new (class PemiluController {
   create(req: Request, res: Response) {
     PemiluService.create(req, res);
   }
+  update(req: Request, res: Response) {
+    PemiluService.update(req, res);
+  }
+  delete(req: Request, res: Response) {
+    PemiluService.delete(req, res);
+  }
 })();
