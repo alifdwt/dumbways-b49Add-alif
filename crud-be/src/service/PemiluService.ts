@@ -65,6 +65,7 @@ export default new (class PemiluService {
         name: data.name,
         vision: data.vision,
         image: imageResult.secure_url,
+        updated_at: new Date(),
       });
 
       const pemilus = this.PemiluRepository.save(obj);
@@ -84,11 +85,12 @@ export default new (class PemiluService {
         `src/uploads/${image}`,
         { folder: "Pemilu" }
       );
+      // console.log(imageResult);
 
       if (!updatePaslon)
         return res.status(404).json({ Error: "Paslon data not found" });
 
-      if (!updatePaslon.name || !updatePaslon.vision || !updatePaslon.image) {
+      if (!updatePaslon.name || !updatePaslon.vision || !imageResult) {
         return res.status(400).json({ Error: "Nothing to update" });
       }
 
@@ -98,6 +100,7 @@ export default new (class PemiluService {
           name: updatePaslon.name,
           vision: updatePaslon.vision,
           image: imageResult.secure_url,
+          updated_at: new Date(),
         })
         .where("id = :id", { id: paslonId })
         .execute();
@@ -114,6 +117,16 @@ export default new (class PemiluService {
   async delete(req: Request, res: Response): Promise<Response> {
     try {
       const paslonId: number = parseInt(req.params.paslonId);
+      const paslonImage = await this.PemiluRepository.find({
+        select: ["image"],
+        where: { id: paslonId },
+      });
+      const imageUrl = paslonImage[0].image;
+      const imageId = imageUrl.split("/").slice(-2).join("/");
+      console.log(imageId);
+      await cloudinary.uploader
+        .destroy(imageId)
+        .then((result) => console.log(result));
 
       const paslon = await this.PemiluRepository.createQueryBuilder("pemilu")
         .delete()

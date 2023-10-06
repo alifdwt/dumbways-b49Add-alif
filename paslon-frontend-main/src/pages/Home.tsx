@@ -46,15 +46,16 @@ export default function Home() {
     "paslonCache",
     async () => {
       const response = await API.get("/paslons");
-      // console.log(response.data);
-      return response.data; // TERNYATA INI SEBABNYA COK!!!! PANTESAN GAK MUNCUL SAT!!!
+      // console.log(response.data.data);
+      return response.data.data; // TERNYATA INI SEBABNYA COK!!!! PANTESAN GAK MUNCUL SAT!!!
     }
   );
 
   const { data: voter, refetch: voterRefetch } = useQuery(
     "voterCache",
     async () => {
-      const response = await API.get("/votes");
+      const response = await API.get("/voters");
+      console.log(response.data.data);
       return response.data.data;
     }
   );

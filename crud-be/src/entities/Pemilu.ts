@@ -16,4 +16,7 @@ export class Pemilu {
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   posted_at: Date;
+
+  @Column({ type: "timestamp" })
+  updated_at: Date;
 }
