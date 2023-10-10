@@ -7,6 +7,8 @@ import {
   ManyToOne,
   OneToOne,
   JoinColumn,
+  Unique,
+  Index,
 } from "typeorm";
 
 import { Paslons } from "./paslons";
@@ -20,6 +22,7 @@ export class Votes {
   @ManyToOne(() => Paslons, (paslon) => paslon.votes)
   paslon: Paslons;
 
+  @Index({ unique: true })
   @OneToOne(() => Users)
   @JoinColumn()
   user: Users;

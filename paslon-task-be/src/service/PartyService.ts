@@ -38,7 +38,6 @@ export default new (class PartyService {
   async GetParty(req: Request, res: Response): Promise<Response> {
     try {
       const partyId: number = parseInt(req.params.partyId);
-      console.log(partyId);
       const party = await this.PartyRepository.findOne({
         relations: {
           paslon: true,
@@ -70,7 +69,6 @@ export default new (class PartyService {
   async createParty(req: Request, res: Response): Promise<Response> {
     try {
       const data = req.body;
-      console.log(data);
       const { error } = createPartySchema.validate(data);
       if (error)
         return res.status(400).json({
